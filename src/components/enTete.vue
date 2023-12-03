@@ -78,12 +78,6 @@ export default {
             }
             return false
         },
-
-        /*deconnecter(){
-            localStorage.removeItem('token')
-            //this.$router.push({ name: "login" });
-            return false
-        },*/
     async logout() {
       localStorage.removeItem('token')
       this.isLogged = false

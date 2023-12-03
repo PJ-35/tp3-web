@@ -1,47 +1,39 @@
 <template>
-    <div class="mt-4 border">
-    <!--
-          <div id="mapContainer" >
+        <div id="mapContainer" >
 
-    </div>
-  <div class="p-3" id="border">
-    <div class="d-flex p-3  justify-content-center">
-    <button class="me-3 btn btn-light shadow" @click="laisseVoiture()" :disabled="isParked || isMoving" >JE LAISSE MA VOITURE</button>
-    <button class="btn btn-light shadow " @click="recupVoiture()" :disabled="!isParked || isMoving" >J'AI RÉCUPÉRÉ MA VOITURE</button>
-    <a role="button" @click="recentrer()" v-show="isMoving || isParked" class="p-2 text-black" title="Trouver ma voiture"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+</div>
+<div class="p-3" id="border">
+<div class="d-flex p-3  justify-content-center">
+<button class="me-3 btn btn-light shadow" @click="laisseVoiture()" :disabled="isParked || isMoving" >JE LAISSE MA VOITURE</button>
+<button class="btn btn-light shadow " @click="recupVoiture()" :disabled="!isParked || isMoving" >J'AI RÉCUPÉRÉ MA VOITURE</button>
+<a role="button" @click="recentrer()" v-show="isMoving || isParked" class="p-2 text-black" title="Trouver ma voiture"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+<path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
 </svg></a>
-  </div>
+</div>
 <div v-show="laissevoiture">
-  <p>
-    Veuillez vérifier que votre voiture est bien stationné à l'endroit indiqué sur la carte ou déplacer la marqueur sur la position de votre voiture
-  </p>
-  <button class="btn btn-light shadow " @click="confirme()" >JE CONFIRME</button>
+<p>
+Veuillez vérifier que votre voiture est bien stationné à l'endroit indiqué sur la carte ou déplacer la marqueur sur la position de votre voiture
+</p>
+<button class="btn btn-light shadow " @click="confirme()" >JE CONFIRME</button>
 </div>
 <div v-show="isMoving">
-  <p class="text-center">Votre voiture est en cours de déplacement</p>
+<p class="text-center">Votre voiture est en cours de déplacement</p>
 </div>
-  </div>
-    -->
+</div>
+</template>
 
-    </div> 
-  </template>
-  
-  <script>
-  import { accueilStore } from '../stores/AccueilStore.js'
+<script>
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
   import {toast} from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import {jwtDecode} from 'jwt-decode';
-
-  export default {
-    data() {
-      return {
-        map: null,
-        disabled1:"",
-        disabled2:"disabled",
-        montant:0,
+export default{
+    props: {
+        montant:{
+            type:Number,
+            required:true
+        },
         isParked:false,
         isMoving:false,
         laissevoiture:false,
@@ -51,25 +43,18 @@ import {jwtDecode} from 'jwt-decode';
         userMarker:null,
         longitude: 0,
         premiereFois:localStorage.getItem("connexion")||false
-      };
     },
-    created () {
-    this.store = accueilStore() // Le store est maintenant disponible dans le composant
-  },
-    async mounted() {
-      this.decrypter()
-      await this.historiqueById()
-      await this.getuserbyid()
-      this.initMap();
-      this.findUserLocation();
-      if(this.premiereFois){
-        toast.success("Vous êtes bien connecté.",{
-        autoClose:3000,
-        theme:'colored'
-      })
-        localStorage.removeItem("connexion")
+
+    data(){
+        return{
+            disabled1:"",
+            disabled2:"disabled",
+            map: null,
+
         }
+
     },
+
     methods: {
       initMap() {
         this.map = L.map("mapContainer").setView([this.latitude, this.longitude], 16);
@@ -105,6 +90,7 @@ import {jwtDecode} from 'jwt-decode';
           console.error("La géolocalisation n'est pas supportée par votre navigateur.");
         }
       },
+
       async confirme(){
         
         if(this.laissevoiture){
@@ -145,7 +131,6 @@ import {jwtDecode} from 'jwt-decode';
 
             }
             const {lat,lng} = this.userMarker.getLatLng();
-           // console.log(lat,lng)
               this.latitude = lat;
               this.longitude = lng;
             await this.confirmeFetch(date)
@@ -245,18 +230,5 @@ import {jwtDecode} from 'jwt-decode';
         }
         },
     }
-  }
-  </script>
-  
-  
-  <style scoped>
-  #mapContainer {
-    width: 100%;
-    height: 400px;
-  }
-  /*button[disabled]{
-  opacity: 50%;
-  cursor: not-allowed;
-  }*/
-  </style>
-  
+}
+</script>

@@ -1,14 +1,29 @@
 <template>
         <div class="shadow p-3 mt-3">
-
+            <form-profil
+            :pseudo="pseudo"  @update:pseudo="updatePseudo"
+            :email="email"  @update:email="updateEmail"
+            :immatriculation="immatriculation"  @update:immatriculation="updateImmatriculation"
+            :marque="marque"  @update:marque="updateMarque"
+            :modele="modele"  @update:modele="updateModele"
+            :tarif="tarif"  @update:tarif="updateTarif"
+            :isvalet="isvalet"
+            :is-parked="isParked"
+            :couleur="couleur"  @update:couleur="updateCouleur"
+            />
 </div>
 </template>
 
 <script>
-import {toast} from 'vue3-toastify'
+//import {toast} from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import {jwtDecode} from 'jwt-decode';
+import FormProfil from '../components/formProfil.vue'
+
 export default{
+    components:{
+        FormProfil
+    },
     data(){
         return{
             pseudo:null,
@@ -32,6 +47,28 @@ export default{
     }
   },
     methods:{
+        updateCouleur(newCouleur){
+            this.couleur=newCouleur.target.value
+        },
+        updateEmail(newEmail){
+            this.email=newEmail.target.value
+        },
+        updateImmatriculation(newI){
+            this.immatriculation=newI.target.value
+        },
+        updateMarque(newMarque){
+            this.marque=newMarque.target.value
+        },
+        updateModele(newModele){
+            this.modele=newModele.target.value
+        },
+        updateTarif(newTarif){
+            this.tarif=newTarif.target.value
+        },
+        updatePseudo(newPseudo){
+            this.pseudo=newPseudo.target.value
+        },
+        
         decrypter(){
             if(this.verifierToken()){
                 this.getuserbyid()
@@ -98,90 +135,9 @@ export default{
           console.log("Une erreur s'est produite");
         });
         },
-        updateProfil(){
-            Promise.all([
-  fetch(`http://localhost:3000/user/${this.id}`, {
-        method: 'PUT',
-        body:JSON.stringify({
-                email:this.email,
-                username:this.pseudo
-            }),
-        headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        },
-        }),
-  fetch(`http://localhost:3000/car/${this.id}`,{
-        method: 'PUT',
-        body:JSON.stringify({
-                modele:this.modele,
-                marque:this.marque,
-                plaque:this.immatriculation,
-                couleur:this.couleur
-            }),
-        headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        },
-        }),
-])
-  .then(responses => {
-    if(!responses[0].ok || !responses[1].ok)
-        throw new Error()
-    toast.success("Profil mis à jour",{
-    autoClose:3000,
-    theme:'colored'
-    });
-  })
-  .catch(() => {
-            toast.error("Veuillez bien remplir tous les champs",{
-                autoClose:3000,
-                theme:'colored'
-            });
-  });
-        },
 
-        updateProfilValet(){
-            fetch(`http://localhost:3000/user/${this.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                email:this.email,
-                username:this.pseudo,
-                price:this.tarif
-            }),
-        headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        },
-        })
-        .then((response) => {
-            if(!response.ok){
-                throw new Error()
-            }else{
-                toast.success("Profil mis à jour",{
-                autoClose:3000,
-                theme:'colored'
-                })
-        }})
-         .catch(() => {
-            toast.error("Veuillez bien remplir tous les champs",{
-                autoClose:3000,
-                theme:'colored'
-            });
-        });
-        },
 
-        submitForm(){
-            if(!this.isParked){
-                if(this.verifierToken()){
-                    if(this.isvalet){
-                        this.updateProfilValet()
-                    }else{
-                this.updateProfil()
-                    }
-            }else{
-                this.deconnecter()
-            }
-            }
 
-        }
 
     }
 }
