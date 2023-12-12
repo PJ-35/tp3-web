@@ -10,7 +10,7 @@ export const accueilStore = defineStore({
   actions: { 
     // login avec courriel et mot de passe
     async userbyid(id) {
-      const response = await fetch(`http://localhost:3000/user/${id}`, {
+      const response = await fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -24,7 +24,7 @@ export const accueilStore = defineStore({
 
     },
     async historiqueById(){
-      const response= await fetch("http://localhost:3000/historique", {
+      const response= await fetch("https://api-tp3-pierre-juniors-projects.vercel.app/historique", {
           method: "GET",
           headers: {
               "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export const accueilStore = defineStore({
   },
 
   async recupVoiture(id){
-    const response = await fetch(`http://localhost:3000/car/${id}`, {
+    const response = await fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/car/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
       isParked:false,
@@ -62,7 +62,7 @@ export const accueilStore = defineStore({
     throw new Error() 
 },
   async confirmeFetch(id,date,longitude,latitude){
-    const response =await         fetch(`http://localhost:3000/car/${id}`, {
+    const response =await         fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/car/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
       isParked:true,

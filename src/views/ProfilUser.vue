@@ -48,25 +48,25 @@ export default{
   },
     methods:{
         updateCouleur(newCouleur){
-            this.couleur=newCouleur.target.value
+            this.couleur=newCouleur
         },
         updateEmail(newEmail){
-            this.email=newEmail.target.value
+            this.email=newEmail
         },
         updateImmatriculation(newI){
-            this.immatriculation=newI.target.value
+            this.immatriculation=newI
         },
         updateMarque(newMarque){
-            this.marque=newMarque.target.value
+            this.marque=newMarque
         },
         updateModele(newModele){
-            this.modele=newModele.target.value
+            this.modele=newModele
         },
         updateTarif(newTarif){
-            this.tarif=newTarif.target.value
+            this.tarif=newTarif
         },
         updatePseudo(newPseudo){
-            this.pseudo=newPseudo.target.value
+            this.pseudo=newPseudo
         },
         
         decrypter(){
@@ -103,7 +103,7 @@ export default{
         },
 
         getuserbyid(){
-            fetch(`http://localhost:3000/user/${this.id}`, {
+            fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/${this.id}`, {
             method: 'GET',
         headers: {
         'Content-type': 'application/json; charset=UTF-8',

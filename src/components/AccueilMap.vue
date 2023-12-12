@@ -23,6 +23,7 @@ Veuillez vérifier que votre voiture est bien stationné à l'endroit indiqué s
 </template>
 
 <script>
+  import { accueilStore } from '../stores/AccueilStore.js';
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
   import {toast} from 'vue3-toastify'
@@ -34,15 +35,9 @@ export default{
             type:Number,
             required:true
         },
-        isParked:false,
-        isMoving:false,
-        laissevoiture:false,
-        aVoiture:false,
-        id:null,
-        latitude: 0,
-        userMarker:null,
-        longitude: 0,
-        premiereFois:localStorage.getItem("connexion")||false
+
+
+       // premiereFois:localStorage.getItem("connexion")||false
     },
 
     data(){
@@ -50,9 +45,26 @@ export default{
             disabled1:"",
             disabled2:"disabled",
             map: null,
-
+            isParked:false,
+            isMoving:false,
+            laissevoiture:false,
+            aVoiture:false,
+            id:null,
+            latitude: 0,
+            userMarker:null,
+            longitude: 0,
         }
 
+    },
+
+    created () {
+    this.store = accueilStore() // Le store est maintenant disponible dans le composant
+  },
+
+    async mounted() {
+      await this.decrypter()
+      this.initMap();
+      this.findUserLocation();
     },
 
     methods: {
@@ -63,6 +75,7 @@ export default{
             '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(this.map);
       },
+
       findUserLocation() {
         if(this.isParked){
           this.map.setView([this.latitude, this.longitude], 13);
@@ -172,9 +185,9 @@ export default{
 
         }
       },
-      decrypter(){
+      async decrypter(){
             if(this.verifierToken()){
-                this.getuserbyid()
+                await this.getuserbyid()
             }else{
                 this.deconnecter()
             }
@@ -221,14 +234,13 @@ export default{
           console.log("Une erreur s'est produite");
         }
         },
-
-      async historiqueById(){
-        try{
-          this.montant=await this.store.historiqueById()
-        }catch{
-          console.log("Une erreur s'est produite");
-        }
-        },
     }
 }
 </script>
+
+<style scoped>
+#mapContainer {
+  width: 100%;
+  height: 400px;
+}
+</style>

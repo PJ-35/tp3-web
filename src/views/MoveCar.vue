@@ -107,7 +107,7 @@ iconAnchor: [16, 16], // Point d'ancrage de votre icône
       deplaceVoiture(){
         this.isMoving=true
         this.markerVoiture.remove()
-        fetch(`http://localhost:3000/car/${this.id}`, {
+        fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/car/${this.id}`, {
             method: 'PUT',
             body: JSON.stringify({
             isMoving:true,
@@ -134,7 +134,7 @@ iconAnchor: [16, 16], // Point d'ancrage de votre icône
         });
       },
       async getuserbyid(){
-           await fetch(`http://localhost:3000/user/${this.id}`, {
+           await fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/${this.id}`, {
             method: 'GET',
         headers: {
         'Content-type': 'application/json; charset=UTF-8',
@@ -174,7 +174,7 @@ iconAnchor: [16, 16], // Point d'ancrage de votre icône
         },
 
         async validation(){
-        fetch(`http://localhost:3000/car/${this.id}`, {
+        fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/car/${this.id}`, {
             method: 'PUT',
             body: JSON.stringify({
             isParked:true,

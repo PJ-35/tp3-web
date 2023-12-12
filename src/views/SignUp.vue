@@ -107,7 +107,7 @@ export default{
         },
 
         signup(){
-            fetch('http://localhost:3000/auth/signup', {
+            fetch('https://api-tp3-pierre-juniors-projects.vercel.app/auth/signup', {
             method: 'POST',
             body: JSON.stringify({
             email: this.email,

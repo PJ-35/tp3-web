@@ -11,41 +11,43 @@ Vous ne pouuvez pas modifi√© votre profil pendant que votre voiture est station√
                 <form class="shadow p-2" @submit.prevent="submitForm" novalidate>
                 <h4>Informations personnelles</h4>
     <div class="form-floating mb-3">
-  <input type="text" class="form-control rounded-0" :value="pseudo" @input="$emit('update:pseudo', $event)" id="pseudo" placeholder="">
+  <input type="text" class="form-control rounded-0" :value="pseudo" @input="inputPseudo($event)" @blur="effacerEspace($event)" id="pseudo" placeholder="">
   <label for="pseudo">Pseudo</label>
 </div>
 <div class="form-floating mb-3">
-  <input type="email"  class="form-control rounded-0 " :value="email" @input="$emit('update:email', $event)" id="email" placeholder="">
+  <input type="email"  class="form-control rounded-0 " :value="email" @input="inputEmail($event)" @blur="effacerEspace($event)" id="email" placeholder="">
   <label for="email">Email</label>
 </div>
 <div v-if="isvalet">
     <div class="form-floating mb-3">
-  <input type="number" class="form-control rounded-0" id="tarif" :value="tarif" @input="$emit('update:tarif', $event)" placeholder="">
+  <input type="number" class="form-control rounded-0" id="tarif" :value="tarif" @input="inputTarif($event)" @blur="effacerEspace($event)" placeholder="">
   <label for="tarif">Tarif</label>
 </div>
 </div>
 <div v-else>
     <h4><strong>Voiture</strong></h4>
 <div class="form-floating mb-3">
-  <input type="text" class="form-control rounded-0" id="immatriculation" :value="immatriculation" @input="$emit('update:immatriculation', $event)" placeholder="">
+  <input type="text" class="form-control rounded-0" id="immatriculation" :value="immatriculation" @blur="effacerEspace($event)" @input="inputImmatriculation($event)" placeholder="">
   <label for="immatriculation">Immatriculation</label>
 </div>
 <div class="form-floating mb-3">
-  <input type="text" class="form-control rounded-0" id="marque" placeholder="" :value="marque" @input="$emit('update:marque', $event)">
+  <input type="text" class="form-control rounded-0" id="marque" placeholder="" :value="marque" @blur="effacerEspace($event)" @input="inputMarque($event)">
   <label for="marque">Marque</label>
 </div>
 <div class="form-floating mb-3">
-  <input type="text" class="form-control rounded-0" id="modele" placeholder="" :value="modele" @input="$emit('update:modele', $event)">
+  <input type="text" class="form-control rounded-0" id="modele" placeholder="" :value="modele" @blur="effacerEspace($event)" @input="inputModele($event)">
   <label for="modele">Modele</label>
 </div>
 <div class="form-floating mb-3">
-  <input type="text" class="form-control rounded-0" id="couleur" placeholder="" :value="couleur" @input="$emit('update:couleur', $event)">
+  <input type="text" class="form-control rounded-0" id="couleur" placeholder="" :value="couleur" @blur="effacerEspace($event)" @input="inputCouleur($event)">
   <label for="couleur">Couleur</label>
 </div>
 </div>
 
-
-<button class="btn btn-primary" :disabled="isParked" type="submit">SOUMETTRE</button>
+<div class="d-flex justify-content-between">
+    <button class="btn btn-danger" :disabled="isParked">Supprimer</button> 
+    <button class="btn btn-primary" :disabled="isParked" type="submit">SOUMETTRE</button>
+</div>
         </form>
 
         </div>
@@ -59,10 +61,6 @@ import {jwtDecode} from 'jwt-decode';
   export default {
     name: 'FormProfil',
     props: {
-     /* id:{
-            type: String,
-            required:true
-        },*/
         pseudo: {
             type: String,
             required:true
@@ -105,10 +103,77 @@ import {jwtDecode} from 'jwt-decode';
     },
     data(){
       return{
-        id:null
+        id:null,
+        userEdit:false
       }
     },
     methods:{
+        effacerEspace(event){
+            event.target.value=event.target.value.trim()
+        },
+        inputPseudo(event){
+            const input=event.target
+            if(/^[^\s].{2,49}$/.test(input.value.trim())){
+                this.$emit('update:pseudo', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputEmail(event){
+            const input=event.target
+            if(/.+@.+\..+/.test(input.value.trim())){
+                this.$emit('update:email', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputTarif(event){
+            const input=event.target
+            if(!isNaN(input.value.trim()) && input.value.trim()>=0){
+                this.$emit('update:tarif', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputImmatriculation(event){
+            const input=event.target
+            if(input.value.trim().length===6){
+                this.$emit('update:immatriculation', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputMarque(event){
+            const input=event.target
+            if(/^[^\s].{0,49}$/.test(input.value.trim())){
+                this.$emit('update:marque', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputModele(event){
+            const input=event.target
+            if(/^[^\s].{0,49}$/.test(input.value.trim())){
+                this.$emit('update:modele', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
+        inputCouleur(event){
+            const input=event.target
+            if(/^[^\s].{2,49}$/.test(input.value.trim())){
+                this.$emit('update:couleur', input.value.trim())
+                input.classList.remove("is-invalid")
+            }else{
+                input.classList.add("is-invalid")
+            }
+        },
         verifierToken(){
             let token=localStorage.getItem('token')
             try{
@@ -136,7 +201,7 @@ import {jwtDecode} from 'jwt-decode';
 
         updateProfil(){
             Promise.all([
-  fetch(`http://localhost:3000/user/${this.id}`, {
+  fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/${this.id}`, {
         method: 'PUT',
         body:JSON.stringify({
                 email:this.email,
@@ -146,7 +211,7 @@ import {jwtDecode} from 'jwt-decode';
         'Content-type': 'application/json; charset=UTF-8',
         },
         }),
-  fetch(`http://localhost:3000/car/${this.id}`,{
+  fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/car/${this.id}`,{
         method: 'PUT',
         body:JSON.stringify({
                 modele:this.modele,
@@ -176,7 +241,7 @@ import {jwtDecode} from 'jwt-decode';
         },
 
         updateProfilValet(){
-            fetch(`http://localhost:3000/user/${this.id}`, {
+            fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/${this.id}`, {
             method: 'PUT',
             body: JSON.stringify({
                 email:this.email,

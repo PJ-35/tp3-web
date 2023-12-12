@@ -79,7 +79,7 @@ import 'vue3-toastify/dist/index.css'
         this.hidden="d-none"
         this.erreur="Email ou mot de passe invalide"
       if (this.validateForm()) {
-        fetch('http://localhost:3000/auth/login', {
+        fetch('https://api-tp3-pierre-juniors-projects.vercel.app/auth/login', {
             method: 'POST',
             body: JSON.stringify({
             email: this.email,

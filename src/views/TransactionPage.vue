@@ -44,7 +44,7 @@
  <small class="">
     <small class="">
         historique par page:  
-    <select   class=" bg-white">
+    <select id="select"   class=" bg-white">
         <option v-for="option in lstOption" v-bind:key="option" :value="[option]" @click="affichequelque()">{{ option }}</option>
         <option @click="afficheTout()">Tout</option>
     </select>
@@ -101,19 +101,19 @@ export default{
             disable1:"disabled",
             disable2:"",
             historique:[],
-            end:1,
+            end:10,
             montant:0,
             facture:[],
             historiqueFetch:[],
-            lstOption:[1,2,3,4],
+            lstOption:[10,25,50,100],
             tout:null,
             partie:null
         }
     },
-    created(){
+    async created(){
         //this.$route.push('/')
-        this.decrypter(this.end)
-        this.factureById()
+        await this.decrypter(this.end)
+        await this.factureById()
 
     },
     watch: {
@@ -137,10 +137,10 @@ export default{
                 this.deconnecter()
             }
         },
-        affichequelque(){
+        async affichequelque(){
             this.end=this.lstOption[document.getElementsByTagName("select")[0].selectedIndex]
-            this.decrypter(this.end)
-            if(this.end===1){
+            await this.decrypter(this.end)
+            if(this.end===10){
                 this.disable1="disabled"
                 this.disable2=""
             }else
@@ -162,10 +162,6 @@ export default{
                         let exp=decoded.exp
                         if (exp >= Date.now() / 1000) {
                             this.id=decoded.id
-                           /* let valet=decoded.isValet
-                            if(valet){
-                                this.$router.push({ name: 'Valet' });
-                            }*/
                             return true
                         }
                     }
@@ -175,8 +171,8 @@ export default{
             }
             return false
         },
-        afficheTout(){
-            this.decrypter()
+        async afficheTout(){
+            await this.decrypter()
             this.end=this.tout
             this.disable1=""
             this.disable2="disabled"
@@ -192,7 +188,7 @@ export default{
                     theme:'colored'
                 })
             }else{
-                await fetch("http://localhost:3000/effectuerPaiement", {
+                await fetch("https://api-tp3-pierre-juniors-projects.vercel.app/effectuerPaiement", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -217,41 +213,44 @@ export default{
 
         },
         ajoutDeLigne1(){
-            if(this.end>1){
-                this.end=1
-                this.decrypter(this.end)
-                this.disable2=""
-                this.disable1="disabled"
-            }
+            this.end=10
+            this.decrypter(this.end)
+            this.disable2=""
+            this.disable1="disabled"
+            document.getElementById("select").selectedIndex=0
         },
         ajoutDeLigne2(){
-            if(this.end>1){
-                this.end-=1
-                this.decrypter(this.end)
-                this.disable2=""
-                if(this.end===1){
-                    this.disable1="disabled"
-                }
+            this.disable2=""
+            let index=document.getElementById("select").selectedIndex
+            if(index-1<=0){
+                this.end=this.lstOption[0]
+                this.disable1="disabled"
+                document.getElementById("select").selectedIndex=0
+            }else{
+                this.end=this.lstOption[index-1]
+                document.getElementById("select").selectedIndex=index-1
             }
+            this.decrypter(this.end)
         },
-        ajoutDeLigne3(){
-            if(this.end<this.historiqueFetch.length){
-                this.end+=1
-                this.decrypter(this.end)
-                this.disable1=""
-                if(this.end===this.historiqueFetch.length){
-                    this.disable2="disabled"
-                }
-            }
-        },
-        ajoutDeLigne4(){
-            if(this.end<this.historiqueFetch.length){
-                this.end=this.historiqueFetch.length
-                this.decrypter(this.end)
+        async ajoutDeLigne3(){
+            this.disable1=""
+            let index=document.getElementById("select").selectedIndex
+            if(index+1>=this.lstOption.length){
+                document.getElementById("select").selectedIndex=this.lstOption.length
+                await this.afficheTout()
                 this.disable2="disabled"
-                this.disable1=""
             }
-            
+            else{
+                this.end=this.lstOption[index+1]
+                document.getElementById("select").selectedIndex=index+1
+                await this.decrypter(this.end)
+            }
+        },
+        async ajoutDeLigne4(){
+            await this.afficheTout()
+            this.disable2="disabled"
+            this.disable1=""
+            document.getElementById("select").selectedIndex=this.lstOption.length
         },
 
         gethour(hour){
@@ -260,7 +259,7 @@ export default{
         },
 
         async historiqueById(){
-            await fetch("http://localhost:3000/historique", {
+            await fetch("https://api-tp3-pierre-juniors-projects.vercel.app/historique", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -287,7 +286,7 @@ export default{
         },
 
         async factureById(){
-            await fetch("http://localhost:3000/facture", {
+            await fetch("https://api-tp3-pierre-juniors-projects.vercel.app/facture", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -308,7 +307,7 @@ export default{
 
 <style scoped>
 .tableau{
-    max-height: 100px;
+    max-height: 200px;
     overflow-y: scroll;
 }
 

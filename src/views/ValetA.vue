@@ -117,6 +117,10 @@ export default {
     afficherCountdown(date1,index) {
         let date=new Date(date1)
         const maintenant = new Date()
+        if(date<=maintenant){
+          clearInterval(this.interval[index]);
+    return "Expiré";
+        }else
         if(date.getDate()>maintenant.getDate()){
             clearInterval(this.interval[index]);
             return "Demain"
@@ -125,13 +129,7 @@ export default {
             const difference = date.getTime()-maintenant.getTime();
   
   const secondes = Math.floor(difference / 1000);
-
-  if (difference <= 0) {
-    clearInterval(this.interval[index]);
-    return "Expiré";
-  }else{
     return `${secondes}s`
-  }
 
         }
 
@@ -140,7 +138,7 @@ deplacerVoiture(id){
     this.$router.push({ name: 'movecar', params: { id: id } })
 },
     loadUser(){
-        fetch("http://localhost:3000/users", {
+        fetch("https://api-tp3-pierre-juniors-projects.vercel.app/users", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
