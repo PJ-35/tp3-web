@@ -5,7 +5,7 @@
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
   <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
 </svg>
-Vous ne pouuvez pas modifié votre profil pendant que votre voiture est stationée
+Vous ne pouvez pas modifier votre profil pendant que votre voiture est stationée
             </div>
             <div class="col-6">
                 <form class="shadow p-2" @submit.prevent="submitForm" novalidate>
@@ -45,10 +45,27 @@ Vous ne pouuvez pas modifié votre profil pendant que votre voiture est station�
 </div>
 
 <div class="d-flex justify-content-between">
-    <button class="btn btn-danger" :disabled="isParked">Supprimer</button> 
+    <button class="btn btn-danger" :disabled="isParked" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Supprimer</button> 
     <button class="btn btn-primary" :disabled="isParked" type="submit">SOUMETTRE</button>
 </div>
         </form>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Suppression</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Voulez-vous vraiment supprimer votre compte ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" @click="supprimerProfil()" data-bs-dismiss="modal">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
         </div>
 </template>
@@ -174,12 +191,12 @@ import {jwtDecode} from 'jwt-decode';
                 input.classList.add("is-invalid")
             }
         },
-        verifierToken(){
+        async verifierToken(){
             let token=localStorage.getItem('token')
             try{
                 if(token){
                 // Décodage du JWT
-                    const decoded = jwtDecode(token);
+                    const decoded = await jwtDecode(token);
                     if(decoded){
                         let exp=decoded.exp
                         if (exp >= Date.now() / 1000) {
@@ -225,7 +242,9 @@ import {jwtDecode} from 'jwt-decode';
         }),
 ])
   .then(responses => {
-    if(!responses[0].ok || !responses[1].ok)
+    if(!responses[0].ok)
+        throw new Error()
+    if(!responses[1].ok && (this.couleur||this.immatriculation||this.marque||this.modele))
         throw new Error()
     toast.success("Profil mis à jour",{
     autoClose:3000,
@@ -267,6 +286,41 @@ import {jwtDecode} from 'jwt-decode';
                 theme:'colored'
             });
         });
+        },
+
+        async supprimerProfil(){
+            if(!this.isParked){
+                if(await this.verifierToken()){
+                    fetch(`https://api-tp3-pierre-juniors-projects.vercel.app/user/`, {
+            method: 'DELETE',
+        headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer "+ localStorage.getItem("token")
+        },
+        })
+        .then((response) => {
+            if(!response.ok){
+                throw new Error()
+            }else{
+                toast.success("Supprimer avec succès",{
+                autoClose:1500,
+                theme:'colored'
+                })
+                setTimeout(() => {
+                this.deconnecter();
+                }, 1500)
+        }})
+         .catch(() => {
+            toast.error("Une erreur s'est produite. Veuillez réessayer plus tard",{
+                autoClose:3000,
+                theme:'colored'
+            });
+        });
+                }else
+                    this.deconnecter()
+
+            }
+
         },
 
         submitForm(){
